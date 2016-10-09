@@ -20,7 +20,8 @@ import (
 const (
 	consoleDone = "/run/console-done"
 	dockerHome  = "/home/docker"
-	gettyCmd    = "/sbin/agetty"
+	// TODO: need to be able to oever-ride these?
+	gettyCmd    = "/sbin/getty"
 	rancherHome = "/home/rancher"
 	startScript = "/opt/rancher/bin/start.sh"
 )
@@ -30,6 +31,14 @@ type symlink struct {
 }
 
 func Main() {
+	recovery := config.GetCmdline("rancher.console")
+	if recovery == "recovery" {
+		//TODO - move into the respawn conf?
+		log.Info("Can I start a shell here?")
+		recoveryConsole()
+		return
+	}
+
 	cfg := config.LoadConfig()
 
 	if _, err := os.Stat(rancherHome); os.IsNotExist(err) {
@@ -137,7 +146,7 @@ func generateRespawnConf(cmdline string) string {
 
 		respawnConf.WriteString(gettyCmd)
 		if strings.Contains(cmdline, fmt.Sprintf("rancher.autologin=%s", tty)) {
-			respawnConf.WriteString(" --autologin rancher")
+			respawnConf.WriteString(" -n -l /bin/sh")
 		}
 		respawnConf.WriteString(fmt.Sprintf(" 115200 %s\n", tty))
 	}
@@ -149,7 +158,7 @@ func generateRespawnConf(cmdline string) string {
 
 		respawnConf.WriteString(gettyCmd)
 		if strings.Contains(cmdline, fmt.Sprintf("rancher.autologin=%s", tty)) {
-			respawnConf.WriteString(" --autologin rancher")
+			respawnConf.WriteString(" -n -l /bin/sh")
 		}
 		respawnConf.WriteString(fmt.Sprintf(" 115200 %s\n", tty))
 	}

@@ -55,7 +55,7 @@ func LoadSpecialService(p *project.Project, cfg *config.CloudConfig, serviceName
 }
 
 func loadConsoleService(cfg *config.CloudConfig, p *project.Project) error {
-	if cfg.Rancher.Console == "" || cfg.Rancher.Console == "default" {
+	if cfg.Rancher.Console == "" || cfg.Rancher.Console == "default" || cfg.Rancher.Console == "recovery" {
 		return nil
 	}
 	return LoadSpecialService(p, cfg, "console", cfg.Rancher.Console)

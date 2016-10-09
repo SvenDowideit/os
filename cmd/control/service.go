@@ -125,6 +125,7 @@ func del(c *cli.Context) error {
 			logrus.Fatal(err)
 		}
 	}
+	//TODO: how to delete the container, so that subsequent re-enablements don't just use what's there.
 
 	return nil
 }
