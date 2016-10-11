@@ -7,6 +7,7 @@ RUN rm /sbin/poweroff /sbin/reboot /sbin/halt && \
     rm -rf /run \
        /linuxrc \
        /etc/os-release \
+       /usr/lib/os-release \
        /var/cache \
        /var/lock \
        /var/log \

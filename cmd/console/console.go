@@ -210,9 +210,10 @@ func modifySshdConfig() error {
 	return ioutil.WriteFile("/etc/ssh/sshd_config", []byte(sshdConfigString), 0644)
 }
 
+// https://www.freedesktop.org/software/systemd/man/os-release.html
 func writeOsRelease() error {
 	idLike := "busybox"
-	if osRelease, err := ioutil.ReadFile("/etc/os-release"); err == nil {
+	if osRelease, err := ioutil.ReadFile("/usr/lib/os-release"); err == nil {
 		for _, line := range strings.Split(string(osRelease), "\n") {
 			if strings.HasPrefix(line, "ID_LIKE") {
 				split := strings.Split(line, "ID_LIKE")
@@ -223,18 +224,22 @@ func writeOsRelease() error {
 		}
 	}
 
-	return ioutil.WriteFile("/etc/os-release", []byte(fmt.Sprintf(`
+	if err := ioutil.WriteFile("/usr/lib/os-release", []byte(fmt.Sprintf(`
 NAME="RancherOS"
 VERSION=%s
 ID=rancheros
 ID_LIKE=%s
 VERSION_ID=%s
 PRETTY_NAME="RancherOS %s"
-HOME_URL=
-SUPPORT_URL=
-BUG_REPORT_URL=
+HOME_URL="http://rancher.com/rancher-os/"
+SUPPORT_URL="https://forums.rancher.com/c/rancher-os"
+BUG_REPORT_URL="https://github.com/rancher/os/issues"
 BUILD_ID=
-`, config.VERSION, idLike, config.VERSION, config.VERSION)), 0644)
+`, config.VERSION, idLike, config.VERSION, config.VERSION, config.VERSION)), 0644); err != nil {
+		return err
+	}
+
+	return os.Symlink("../usr/lib/os-release", "etc/os-release")
 }
 
 func setupSSH(cfg *config.CloudConfig) error {
