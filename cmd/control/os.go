@@ -37,7 +37,7 @@ func osSubcommands() []cli.Command {
 			Flags: []cli.Flag{
 				cli.BoolFlag{
 					Name:  "stage, s",
-					Usage: "Only stage the new upgrade, don't apply it",
+					Usage: "Only stage the new upgrade, don't apply it (ie, create the service, pull the image, then exit - upgrade will happen on next reboot?)",
 				},
 				cli.StringFlag{
 					Name:  "image, i",
