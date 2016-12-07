@@ -186,6 +186,7 @@ func isInitrd() bool {
 }
 
 func setupSharedRoot(c *config.CloudConfig) (*config.CloudConfig, error) {
+
 	if c.Rancher.NoSharedRoot {
 		return c, nil
 	}
