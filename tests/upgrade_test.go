@@ -11,6 +11,7 @@ func (s *QemuSuite) TestUpgrade(c *C) {
 
 	s.CheckCall(c, `
 set -ex
+ros -v
 sudo ros os upgrade -i rancher/os:v0.5.0 --force --no-reboot`)
 
 	s.Reboot(c)

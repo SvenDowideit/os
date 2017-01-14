@@ -9,8 +9,8 @@ declare -A ttycons=( ["amd64"]="ttyS0" ["arm"]="ttyAMA0" ["arm64"]="ttyAMA0" )
 declare -A machine=( ["amd64"]="" ["arm"]="-M virt" ["arm64"]="-M virt" )
 declare -A cpu=( ["amd64"]="" ["arm"]="-cpu cortex-a8" ["arm64"]="-cpu cortex-a57" )
 declare -A network=(
-    ["amd64"]="-net nic,vlan=0,model=virtio -net user,vlan=0,hostfwd=tcp::2222-:22,hostname=rancher-dev"
-    ["arm"]="-netdev user,id=unet,hostfwd=tcp::2222-:22,hostname=rancher-dev -device virtio-net-device,netdev=unet"
+    ["amd64"]="-net nic,vlan=0,model=virtio -net user,vlan=0,hostfwd=tcp::2222-:22,hostname=rancher-dev,net=192.168.77.0/24,dhcpstart=192.168.77.9"
+    ["arm"]="-netdev user,id=unet,hostfwd=tcp::2222-:22,hostname=rancher-dev,net=192.168.77.0/24,dhcpstart=192.168.77.9 -device virtio-net-device,netdev=unet"
 )
 network["arm64"]=${network["arm"]}
 
