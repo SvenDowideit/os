@@ -16,7 +16,9 @@ mount -t 9p -o trans=virtio,version=9p2000.L config-2 /mnt
 touch log
 sleep 5
 openvt -s -- tail -f log &
-ros install -d /dev/vda -f --no-reboot >log 2>&1
+ros install -d /dev/vda -f --no-reboot \
+	--append "console=tty1 rancher.debug=true printk.devkmsg=on notsc clocksource=kvm-clock rancher.network.interfaces.eth0.ipv4ll rancher.cloud_init.datasources=[digitalocean] rancher.autologin=tty1 rancher.autologin=ttyS0" \
+	>log 2>&1
 
 touch /mnt/success
 EOF

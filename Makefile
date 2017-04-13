@@ -51,6 +51,7 @@ openstack:
 
 openstack-run:
 	qemu-system-x86_64 -curses \
+		-enable-kvm \
 		-net nic -net user \
 		-m 2048M \
 		--hdc scripts/images/openstack/dist/rancheros-openstack.img
