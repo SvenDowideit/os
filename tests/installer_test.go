@@ -165,10 +165,10 @@ func (s *QemuSuite) KillsMyServerTestInstalledDhcp(c *C) {
 	runArgs := []string{
 		"--iso",
 		"--fresh",
-//		"-net", "nic,vlan=0,model=virtio",
-//		"-net", "user,vlan=0",
-//		"-net", "nic,vlan=0,model=virtio",
-//		"-net", "user,vlan=0",
+		//		"-net", "nic,vlan=0,model=virtio",
+		//		"-net", "user,vlan=0",
+		//		"-net", "nic,vlan=0,model=virtio",
+		//		"-net", "user,vlan=0",
 	}
 	version := ""
 	{
@@ -266,8 +266,8 @@ echo "==================="
 ip a
 `)
 
-	s.NetCheckOutput(c, version, Equals, "sudo ros -v")
-	s.NetCheckOutput(c, "", Not(Equals), "sh", "-c", "\"ip a show eth1 | grep 10.0.2.253\"")
-	s.Stop(c)
+		s.NetCheckOutput(c, version, Equals, "sudo ros -v")
+		s.NetCheckOutput(c, "", Not(Equals), "sh", "-c", "\"ip a show eth1 | grep 10.0.2.253\"")
+		s.Stop(c)
 	}
 }
