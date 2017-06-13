@@ -160,7 +160,7 @@ sync
 	s.Stop(c)
 }
 
-func (s *QemuSuite) TestInstalledDhcp(c *C) {
+func (s *QemuSuite) KillsMyServerTestInstalledDhcp(c *C) {
 	// ./scripts/run --no-format --append "rancher.debug=true"  --iso --fresh
 	runArgs := []string{
 		"--iso",
@@ -180,7 +180,6 @@ func (s *QemuSuite) TestInstalledDhcp(c *C) {
 		fmt.Printf("installing %s", version)
 
 		s.CheckCall(c, `
-set -ex
 echo "ssh_authorized_keys:" > config.yml
 echo "  - $(cat /home/rancher/.ssh/authorized_keys)" >> config.yml
 echo "rancher:" >> config.yml
@@ -221,4 +220,51 @@ sync
 	s.NetCheckOutput(c, version, Equals, "sudo ros -v")
 	s.NetCheckOutput(c, "", Not(Equals), "sh", "-c", "ip a show eth1 | grep 10.0.2..253")
 	s.Stop(c)
+}
+
+func (s *QemuSuite) TestConfigDhcp(c *C) {
+	runArgs := []string{
+		"--iso",
+		"--fresh",
+		"-net", "nic,vlan=0,model=virtio",
+		"-net", "user,vlan=0",
+		"-net", "nic,vlan=0,model=virtio",
+		"-net", "user,vlan=0",
+	}
+	version := ""
+	{
+		s.RunQemuWithNetConsole(c, runArgs...)
+
+		s.NetCall("ip a")
+
+		version = s.NetCheckOutput(c, version, Not(Equals), "sudo ros -v")
+		fmt.Printf("installing %s", version)
+
+		s.NetCheckCall(c, `
+echo "ssh_authorized_keys:" > config.yml
+echo "  - $(cat /home/rancher/.ssh/authorized_keys)" >> config.yml
+echo "rancher:" >> config.yml
+echo "  network:" >> config.yml
+echo "    interfaces:" >> config.yml
+echo "      eth2:" >> config.yml
+echo "        dhcp: true" >> config.yml
+echo "      eth1:" >> config.yml
+echo "        address: 10.0.2.253/24" >> config.yml
+echo "        dhcp: false" >> config.yml
+echo "        gateway: 10.0.2.1" >> config.yml
+echo "        mtu: 1500" >> config.yml
+ip a
+echo "==================="
+cat config.yml | sudo ros config merge
+sudo ros service stop network
+sleep 1
+sudo ros service start network
+sleep 1
+ip a
+`)
+
+	s.NetCheckOutput(c, version, Equals, "sudo ros -v")
+	s.NetCheckOutput(c, "", Not(Equals), "sh", "-c", "ip a show eth1 2>/dev/null | grep 10.0.2.253")
+	s.Stop(c)
+	}
 }

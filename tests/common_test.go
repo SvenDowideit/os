@@ -132,12 +132,14 @@ func (s *QemuSuite) NetCall(cmd string) string {
 	r, err := s.netConsole.Read("\n")
 	fmt.Printf("cmd> %s", r)
 	result := ""
+	r = ""
 	for err == nil {
 		r, err = s.netConsole.Read("\n")
 		fmt.Printf("\t%s", r)
 		result = result + r
 	}
 	fmt.Printf("\n")
+	// Note, if the result contains something like "+ cmd\n", you may have set -xe on
 	return result
 }
 func (s *QemuSuite) NetCheckCall(c *C, additionalArgs ...string) {
@@ -146,6 +148,7 @@ func (s *QemuSuite) NetCheckCall(c *C, additionalArgs ...string) {
 }
 func (s *QemuSuite) NetCheckOutput(c *C, result string, check Checker, additionalArgs ...string) string {
 	out := s.NetCall(strings.Join(additionalArgs, " "))
+	out = strings.Replace(out, "\r", "", -1)
 	c.Assert(out, check, result)
 	return out
 }
