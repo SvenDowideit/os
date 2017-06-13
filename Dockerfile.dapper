@@ -28,7 +28,8 @@ RUN apt-get update && \
         syslinux-common \
         vim \
         wget \
-        xorriso
+        xorriso \
+	telnet
 
 ########## Dapper Configuration #####################
 
