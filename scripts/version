@@ -19,10 +19,14 @@ INITRD=initrd-${VERSION}
 export VERSION COMMIT INITRD
 
 # Suffix
-export SUFFIX=""
+SUFFIX=""
 if [ -n "${ARCH}" ] && [ "${ARCH}" != "amd64" ]; then
-    # TODO: why is this not exported?
     SUFFIX="_${ARCH}"
+fi
+
+export SUFFIX
+if [ "${ARCH}" == "" ]; then
+	ARCH="amd64"
 fi
 
 echo " Building ${VERSION} from ${COMMIT} on ${ARCH}"
