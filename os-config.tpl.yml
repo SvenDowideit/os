@@ -1,4 +1,13 @@
+hostname: test-cloud
+ssh_authorized_keys:
+  - ssh-rsa AAAAB4NzaC1yc2EAAAADAQABAAABAQDptcSecYUcBExglXGkl9NiRkTTcIxQ4AVnMYcfW560YGVUx6+QgDnj5DScrayi/FtiByleyDCkfoW8vk/iGvyNkFrjQ/WnGXnVQrEkPQyi7gvB/NAvJlZYFTmLsLcr/sc3ZN0SE+bubvE7pGIDBd+wI/u9q2ok/r5GhjbctHR8t8V0XRCzIxEOSwrYJ3O8xxYFP8UPvyitIz85+FKDpoljS/77sXH3lcoMtrzhgw4rWaE8FQb5caI08Nn15ibqrYoK30Gq2y2aPCbQmlhx0Z7z9FNkACXx0m54A0jurRsiOnyxVb2oSR5CU8cNawBKmJwl8Ygd5JdKpaoQnqeRw9mJ sven@Svens-Mac-mini.local
+  - ssh-dss AAAAB3NzaC1kc3MAAACBAOx1jTO0moMoc+AkryZIebnEBRgmgRFA2iQyxaJB55VT5lHIVfH2O7f2roQoq3bTXEirGOe87oY4LIwxpGMRAl1REzD4HVBcjiY7Oj+lQYCJSjjwxlzEtP1gRqCCybYylwP795d+WEiMJzHl8pA1hVDgO09eVxhhVTZOum4klUP9AAAAFQDPcWw8X1YiSBk48xhllOY0XETJVwAAAIEAmF1sUH8JQFRTTR840MMJg7IVctD7iVAx9TOu9/HgSro6xx2yc9KqoI+CwnkdgDTeAyF9McsB4uFvlLSBMFcn2gEy4uyAZsLJ1U11r7//65VSbSuCGPBozEdf4EkmOuQIhSW3nzMvIHHDsC04CAMTIAtgvp4FZKXKgjPfNvkaIvQAAACAKhD986nhP1BxgkA9x50Hs7e4aPTw/WxrsjG45i9AAxWAT80yyzALLP5ETQHxEdd9rxG17bTH7h/7lhNfDJUMC8ok8RKgRTNzSoOUoNNNGToM/3kgWpvCWnK8EenZijTXOMjs7EMk46P+Wy3j4LqHj6GYkrckpEMxscs1O/eXV2k= sven@quad
+  - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC4lT2u93xi+ghKV/zmkSDLqDzGOVb0iZnmh3H6+jJuAiEJwrQ7a33nL9CYVhvlE+dvszVqJT5Q2VHexiuzguqCeaoQvn9preuIc0vvSVlxUwBRtNjKGPO5SmcDgiPKLqeLNgkKWBWaseZR/GdrXlnUD8snnatBtSh2mx1cwVJr0XdyTAtnCS5eyONzpBFpHZ7/dzzeSqjG3SAXwj/x41WDJE4bBNXlGOCJ1RYk9Z5HYH/fGt5B6V34hy/EKe9Wl4yaDdlL+JTXHWGTEhPL/+yaUM6SZT92XFq/H562t8EIAL15KX8FtOv4Q/U9ByZP8xcSir/VIKoGIfMdeRtZobSDvM0caEMUp6lI+5ErmynVExVtroSPdjVdX3q7Onuqcp6JvBFVngAcviuCZDCXuFfF9ikB1axBTGTQlCAebCBPapyBF8z6RFDROHmm5CeV3RozsHEaRqNzPBoG5Tz9Z3mmDE/i2ihLpET67dpQVI8H3/r4puNwtttHh93BmPR9ZB80iLf4Oim/y1joI7UQwc+TJg6eMBZMUWeR8dVhIXFgohiEfvuSUfs7j67V9IzzIefaRGKEv1bBnTYaOlD/KbPXOxYazZAm00wx6DvEfiKxwCOanbN0z+TMyi5WxCum7pSCUZ9+M767aPzRBipQokpBJTLuq5Tn+XAOU49AIt0a3Q== SvenDowideit@home.org.au
 rancher:
+  shutdown_timeout: 60
+  services_include:
+    open-vm-tools: true
+  password: rancher
   environment:
     VERSION: {{.VERSION}}
     SUFFIX: {{.SUFFIX}}
@@ -55,6 +64,10 @@ rancher:
       - /var/lib/rancher:/var/lib/rancher
       - /var/lib/rancher/conf:/var/lib/rancher/conf
   bootstrap_docker:
+    registry_mirror: "http://10.10.10.23:5555"
+    insecure_registry:
+    - 10.10.10.23:5000
+    - arian:5000
     bridge: none
     storage_driver: overlay
     restart: false
@@ -316,6 +329,10 @@ rancher:
       - /sys:/host/sys
       - /var/lib/system-docker:/var/lib/system-docker:shared
   system_docker:
+    registry_mirror: "http://10.10.10.23:5555"
+    insecure_registry:
+    - 10.10.10.23:5000
+    - arian:5000
     exec: true
     storage_driver: overlay
     restart: false
@@ -333,6 +350,10 @@ rancher:
     url: {{.OS_RELEASES_YML}}/releases{{.SUFFIX}}.yml
     image: {{.OS_REPO}}/os
   docker:
+    registry_mirror: "http://10.10.10.23:5555"
+    insecure_registry:
+    - 10.10.10.23:5000
+    - arian:5000
     {{if eq "amd64" .ARCH -}}
     engine: docker-1.12.6
     {{else -}}
