@@ -367,7 +367,11 @@ func runInstall(image, installType, cloudConfig, device, partition, statedir, ka
 func mountBootIso() error {
 	deviceName := "/dev/sr0"
 	deviceType := "iso9660"
-	if d, t := util.Blkid("RancherOS"); d != "" {
+	d, t, err := util.Blkid("RancherOS")
+	if err != nil {
+		log.Errorf("Failed to run blkid: %s", err)
+	}
+	if d != "" {
 		deviceName = d
 		deviceType = t
 	}
@@ -796,7 +800,11 @@ func mountdevice(baseName, bootDir, device, partition string, raw bool) (string,
 		// Don't use ResolveDevice - it can fail, whereas `blkid -L LABEL` works more often
 
 		cfg := config.LoadConfig()
-		if d, _ := util.Blkid("RANCHER_BOOT"); d != "" {
+		d, _, err := util.Blkid("RANCHER_BOOT")
+		if err != nil {
+			log.Errorf("Failed to run blkid: %s", err)
+		}
+		if d != "" {
 			partition = d
 			baseName = filepath.Join(baseName, "boot")
 		} else {
@@ -804,7 +812,11 @@ func mountdevice(baseName, bootDir, device, partition string, raw bool) (string,
 				// try the rancher.state.dev setting
 				partition = dev
 			} else {
-				if d, _ := util.Blkid("RANCHER_STATE"); d != "" {
+				d, _, err := util.Blkid("RANCHER_STATE")
+				if err != nil {
+					log.Errorf("Failed to run blkid: %s", err)
+				}
+				if d != "" {
 					partition = d
 				}
 			}

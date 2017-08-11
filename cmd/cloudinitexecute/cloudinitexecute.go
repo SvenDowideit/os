@@ -99,7 +99,10 @@ func ApplyConsole(cfg *rancherConfig.CloudConfig) {
 		}
 	}
 
-	util.RunCommandSequence(cfg.Runcmd)
+	err := util.RunCommandSequence(cfg.Runcmd)
+	if err != nil {
+		log.Error(err)
+	}
 }
 
 func WriteFiles(cfg *rancherConfig.CloudConfig, container string) {

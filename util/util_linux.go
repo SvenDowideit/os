@@ -11,7 +11,6 @@ import (
 	"syscall"
 
 	"github.com/docker/docker/pkg/mount"
-	"github.com/rancher/os/log"
 )
 
 func mountProc() error {
@@ -49,20 +48,18 @@ func Unmount(target string) error {
 	return mount.Unmount(target)
 }
 
-func Blkid(label string) (deviceName, deviceType string) {
+func Blkid(label string) (deviceName, deviceType string, err error) {
 	// Not all blkid's have `blkid -L label (see busybox/alpine)
 	cmd := exec.Command("blkid")
 	cmd.Stderr = os.Stderr
 	out, err := cmd.Output()
 	if err != nil {
-		log.Errorf("Failed to run blkid: %s", err)
 		return
 	}
 	r := bytes.NewReader(out)
 	s := bufio.NewScanner(r)
 	for s.Scan() {
 		line := s.Text()
-		//log.Debugf("blkid: %s", cmd, line)
 		if !strings.Contains(line, `LABEL="`+label+`"`) {
 			continue
 		}
@@ -72,7 +69,6 @@ func Blkid(label string) (deviceName, deviceType string) {
 		s1 := strings.Split(line, `TYPE="`)
 		s2 := strings.Split(s1[1], `"`)
 		deviceType = s2[0]
-		log.Debugf("blkid type of %s: %s", deviceName, deviceType)
 		return
 	}
 	return
