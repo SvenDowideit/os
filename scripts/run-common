@@ -53,3 +53,18 @@ if [ "$ENGINE_REGISTRY_MIRROR" != "" ]; then
 fi
 
 DEFAULT_KERNEL_ARGS="printk.devkmsg=on rancher.password=rancher console=tty1 rancher.autologin=tty1 console=${TTYCONS} rancher.autologin=${TTYCONS} ${REGISTRY_MIRROR} "
+
+make_qemutap() {
+#if ! ip a show qemutap >/dev/null 2>&1; then
+	DEV=$(ip route | grep default | cut -d " " -f 5)
+	echo "adding qemutap to $DEV"
+	sudo ip tuntap add dev qemutap mode tap user $USER | true
+	sudo brctl addbr qemubr | true
+	sudo iw dev $DEV set 4addr on | true # make my wifi card look like an ethernet dev 
+	sudo brctl addif qemubr $DEV
+	sudo brctl addif qemubr qemutap
+	sudo ip link set qemubr up
+	sudo ip link set $DEV up
+	sudo ip link set qemutap up
+#fi
+}

@@ -667,22 +667,24 @@ func setDiskpartitions(device, diskType string) error {
 		}
 	}
 	//do it!
-	log.Debugf("running dd")
-	cmd := exec.Command("dd", "if=/dev/zero", "of="+device, "bs=512", "count=2048")
-	//cmd.Stdout, cmd.Stderr = os.Stdout, os.Stderr
-	if err := cmd.Run(); err != nil {
-		log.Errorf("dd error %s", err)
-		return err
-	}
-	log.Debugf("running partprobe")
-	cmd = exec.Command("partprobe", device)
-	//cmd.Stdout, cmd.Stderr = os.Stdout, os.Stderr
+	/*
+		log.Infof("running dd")
+		cmd := exec.Command("dd", "if=/dev/zero", "of="+device, "bs=512", "count=2048")
+		cmd.Stdout, cmd.Stderr = os.Stdout, os.Stderr
+		if err := cmd.Run(); err != nil {
+			log.Errorf("dd error %s", err)
+			return err
+		}
+	*/
+	log.Infof("running partprobe %s", device)
+	cmd := exec.Command("partprobe", device)
+	cmd.Stdout, cmd.Stderr = os.Stdout, os.Stderr
 	if err := cmd.Run(); err != nil {
 		log.Errorf("partprobe error %s", err)
 		return err
 	}
 
-	log.Debugf("making single RANCHER_STATE partition")
+	log.Infof("making single RANCHER_STATE partition")
 	cmd = exec.Command("parted", "-s", "-a", "optimal", device,
 		"mklabel "+diskType, "--",
 		"mkpart primary ext4 1 -1")

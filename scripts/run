@@ -19,6 +19,13 @@ while [ "$#" -gt 0 ]; do
             QIND=0
             REBUILD=0
             ;;
+        --bootnet)
+            BOOT_NET=1
+            QEMU=0
+            QIND=0
+            REBUILD=0
+            CONSOLEDISPLAY=1
+            ;;
         --boothd)
             BOOT_HD=1
             QEMU=0
@@ -199,7 +206,7 @@ if [ "$KVM" == "" ] && [ -c /dev/kvm ] && [ -r /dev/kvm ] && [ -w /dev/kvm ]; th
     KVM=1
 fi
 set -x
-if [ "$QEMU" == "1" ] || [ "$BOOT_ISO" == "1" ] || [ "$BOOT_HD" == "1" ]; then
+if [ "$QEMU" == "1" ] || [ "$BOOT_ISO" == "1" ] || [ "$BOOT_HD" == "1" ] || [ "$BOOT_NET" == "1" ]; then
     HD=${BASE}/state/hd.img
     HD2=${BASE}/state/hd2.img
     [ "$FRESH" == "1" ] && rm -f ${HD} ${HD2} >/dev/null 2>&1 || :
@@ -333,7 +340,12 @@ if [ "$QEMU" == "1" ]; then
             "${@}"
 
 elif [ "$BOOT_ISO" == "1" ] ||
-            [ "$BOOT_HD" == "1" ]; then
+            [ "$BOOT_HD" == "1" ] ||
+	    [ "$BOOT_NET" == "1" ]; then
+    if [ "$BOOT_NET" == "1" ]; then
+	    make_qemutap
+	    NETWORK="-boot n -net nic -net tap,ifname=qemutap,script=no,downscript=no"
+    fi
     if [ "$BOOT_ISO" == "1" ]; then
         ISO_OPTS="-boot d -cdrom ./dist/artifacts/rancheros.iso \
             -fsdev local,security_model=none,id=fsdev1,path=${HOME} \
